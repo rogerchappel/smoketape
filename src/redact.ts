@@ -1,7 +1,7 @@
 const DEFAULT_SECRET_PATTERNS = [
-  /[A-Za-z0-9_+.-]*TOKEN[A-Za-z0-9_+.-]*=([^\s]+)/gi,
-  /[A-Za-z0-9_+.-]*SECRET[A-Za-z0-9_+.-]*=([^\s]+)/gi,
-  /[A-Za-z0-9_+.-]*PASSWORD[A-Za-z0-9_+.-]*=([^\s]+)/gi,
+  /[A-Za-z0-9_+.-]*TOKEN[A-Za-z0-9_+.-]*=([^\s\"\']+)/gi,
+  /[A-Za-z0-9_+.-]*SECRET[A-Za-z0-9_+.-]*=([^\s\"\']+)/gi,
+  /[A-Za-z0-9_+.-]*PASSWORD[A-Za-z0-9_+.-]*=([^\s\"\']+)/gi,
   /ghp_[A-Za-z0-9_]{20,}/g,
   /sk-[A-Za-z0-9]{20,}/g
 ];
