@@ -25,7 +25,18 @@ export function redactText(input: string, redactions: string[] = []): { text: st
 }
 
 export function redactObject<T>(value: T, redactions: string[]): { value: T; redacted: boolean } {
-  const raw = JSON.stringify(value);
-  const result = redactText(raw, redactions);
-  return { value: JSON.parse(result.text) as T, redacted: result.redacted };
+  let redacted = false;
+  const visit = (item: unknown): unknown => {
+    if (typeof item === 'string') {
+      const result = redactText(item, redactions);
+      redacted = redacted || result.redacted;
+      return result.text;
+    }
+    if (Array.isArray(item)) return item.map(visit);
+    if (item && typeof item === 'object') {
+      return Object.fromEntries(Object.entries(item).map(([key, child]) => [key, visit(child)]));
+    }
+    return item;
+  };
+  return { value: visit(value) as T, redacted };
 }
