@@ -1,0 +1,12 @@
+version: 1
+name: env
+env:
+  GLOBAL_VALUE: tape
+steps:
+  - name: merge env
+    command: node -e "console.log(process.env.GLOBAL_VALUE + ':' + process.env.STEP_VALUE + ':' + process.env.SMOKETAPE_NETWORK)"
+    env:
+      STEP_VALUE: step
+    expect:
+      stdout:
+        contains: tape:step:disabled
