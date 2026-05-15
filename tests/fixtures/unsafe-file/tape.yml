@@ -1,0 +1,9 @@
+version: 1
+name: unsafe-file
+steps:
+  - name: unsafe assertion
+    command: node -e "console.log('ok')"
+    expect:
+      files:
+        - path: ../outside.txt
+          exists: false
