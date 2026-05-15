@@ -19,8 +19,8 @@
     "check": "tsc --noEmit",
     "test": "npm run build && node --test dist/tests/*.test.js",
     "smoke": "npm run build && bash scripts/smoke.sh",
-    "packageSmoke": "npm pack --dry-run",
-    "releaseCheck": "npm test && npm run smoke && npm run packageSmoke"
+    "package:smoke": "npm pack --dry-run",
+    "release:check": "npm test && npm run smoke && npm run package:smoke"
   },
   "keywords": [
     "cli",
