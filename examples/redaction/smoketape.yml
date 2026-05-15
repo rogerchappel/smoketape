@@ -1,0 +1,11 @@
+version: 1
+name: redaction-example
+redactions:
+  - demo-secret
+steps:
+  - name: redact output
+    command: node -e "console.log('token=demo-secret')"
+    expect:
+      stdout:
+        contains: token=
+        notContains: demo-secret
