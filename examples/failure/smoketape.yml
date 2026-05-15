@@ -1,0 +1,8 @@
+version: 1
+name: failure-example
+steps:
+  - name: demonstrate failed expectation
+    command: node -e "console.log('actual output')"
+    expect:
+      stdout:
+        contains: expected output
