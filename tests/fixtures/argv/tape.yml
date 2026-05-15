@@ -1,0 +1,8 @@
+version: 1
+name: argv
+steps:
+  - name: argv command
+    command: ["node", "-e", "console.log(process.argv[1])", "array-ok"]
+    expect:
+      stdout:
+        contains: array-ok
