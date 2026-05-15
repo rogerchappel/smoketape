@@ -1,0 +1,10 @@
+version: 1
+name: basic-pass
+steps:
+  - name: greet
+    command: node -e "console.log('hello smoketape')"
+    expect:
+      exitCode: 0
+      stdout:
+        contains: hello
+        regex: smoke[a-z]+

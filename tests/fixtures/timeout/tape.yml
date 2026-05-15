@@ -1,0 +1,8 @@
+version: 1
+name: timeout
+steps:
+  - name: slow command
+    command: node -e "setTimeout(()=>console.log('late'), 1000)"
+    timeoutMs: 50
+    expect:
+      exitCode: 0

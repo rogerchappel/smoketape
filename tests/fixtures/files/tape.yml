@@ -1,0 +1,11 @@
+version: 1
+name: file-assertions
+steps:
+  - name: create file
+    command: node -e "require('fs').writeFileSync('artifact.txt','alpha beta')"
+    expect:
+      files:
+        - path: artifact.txt
+          exists: true
+          contains: alpha
+          notContains: gamma

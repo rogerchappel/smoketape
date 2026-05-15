@@ -1,0 +1,11 @@
+version: 1
+name: redact
+redactions:
+  - visible-secret
+steps:
+  - name: print secret
+    command: node -e "console.log('token=visible-secret')"
+    expect:
+      stdout:
+        contains: token=
+        notContains: visible-secret

@@ -1,0 +1,12 @@
+version: 1
+name: smoketape-sample
+description: A tiny example tape that runs without touching the network.
+steps:
+  - name: write proof file
+    command: node -e "require('fs').writeFileSync('proof.txt','smoke passed\\n'); console.log('done')"
+    expect:
+      stdout:
+        contains: done
+      files:
+        - path: proof.txt
+          contains: smoke passed

@@ -1,0 +1,8 @@
+version: 1
+name: failing
+steps:
+  - name: fail output
+    command: node -e "console.log('actual')"
+    expect:
+      stdout:
+        contains: expected
