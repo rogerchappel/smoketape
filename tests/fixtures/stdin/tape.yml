@@ -1,0 +1,9 @@
+version: 1
+name: stdin
+steps:
+  - name: echo stdin
+    command: node -e "process.stdin.on('data', d => process.stdout.write('got:' + d))"
+    stdin: input-value
+    expect:
+      stdout:
+        contains: got:input-value
