@@ -1,0 +1,8 @@
+version: 1
+name: basic-example
+steps:
+  - name: print version
+    command: node --version
+    expect:
+      stdout:
+        regex: '^v[0-9]+'
