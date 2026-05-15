@@ -52,6 +52,26 @@ test('renders markdown proof reports', async () => {
   assert.match(markdown, /PASS/);
 });
 
+
+
+test('passes stdin to commands', async () => {
+  const report = await runTape(fixture('stdin'));
+  assert.equal(report.ok, true);
+  assert.match(report.steps[0]?.stdout ?? '', /got:input-value/);
+});
+
+test('runs argv array commands without a shell', async () => {
+  const report = await runTape(fixture('argv'));
+  assert.equal(report.ok, true);
+  assert.match(report.steps[0]?.stdout ?? '', /array-ok/);
+});
+
+test('merges tape and step environment with network disabled marker', async () => {
+  const report = await runTape(fixture('env'));
+  assert.equal(report.ok, true);
+  assert.match(report.steps[0]?.stdout ?? '', /tape:step:disabled/);
+});
+
 test('real CLI smoke writes JSON and markdown reports', async () => {
   await execFileAsync('npm', ['run', 'build'], { cwd: root });
   const tmp = await mkdtemp(path.join(os.tmpdir(), 'smoketape-cli-test-'));
