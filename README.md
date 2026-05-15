@@ -73,6 +73,13 @@ command: ["node", "demo/cli.mjs", "--help"]
 
 This is a local smoke-test tool, not a secure untrusted-code sandbox. Review tapes before running them.
 
+## More docs
+
+- [Tape schema](docs/schema.md)
+- [Reports](docs/reports.md)
+- [Safety notes](docs/safety.md)
+- [Orchestration](docs/ORCHESTRATION.md)
+
 ## Reports
 
 Markdown reports are human-friendly evidence for PRs and agent handoffs. JSON reports are stable enough for automation:
