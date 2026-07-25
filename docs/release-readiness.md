@@ -15,7 +15,7 @@ npm run release:check
 
 ## Package contents
 
-Run `npm run package:smoke` when available and review the dry-run file list for only the built runtime, README, license, and other intentional release assets.
+Run `npm run package:smoke` after building. It packs the publish artifact, verifies every advertised `main`, `bin`, `exports`, and `types` target, and compiles a TypeScript consumer against the tarball.
 
 ## Notes
 
