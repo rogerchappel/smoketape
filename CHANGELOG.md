@@ -10,6 +10,12 @@ format and uses semantic versioning when versioned releases are published.
 ### Added
 
 - Added a release-readiness checklist for local verification and package review.
+- Added a low-severity dependency audit to CI and the release-readiness gate.
+
+### Changed
+
+- Updated `js-yaml` and `tsx` lockfile resolutions to pick up patched
+  `js-yaml` and `esbuild` releases.
 
 - Initial project setup.
 
