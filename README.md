@@ -6,12 +6,14 @@ Tiny, deterministic smoke tests for CLIs. Write a readable YAML tape, replay it 
 
 ## Install
 
+The npm package has not been published yet. After the first successful registry release, install it with:
+
 ```bash
 npm install -D smoketape
 npx smoketape init
 ```
 
-For local development in this repo:
+Until then, install from a checkout for local development:
 
 ```bash
 npm install
