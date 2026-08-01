@@ -52,6 +52,12 @@ try {
     ['install', '--ignore-scripts', '--no-audit', '--no-fund', tarball],
     { cwd: consumer, stdio: 'inherit' },
   );
+  const cliOutput = execFileSync(
+    join(consumer, 'node_modules', '.bin', 'smoketape'),
+    ['--version'],
+    { cwd: consumer, encoding: 'utf8' },
+  ).trim();
+  assert.equal(cliOutput, manifest.version, 'packed smoketape CLI reports the wrong version');
   writeFileSync(join(consumer, 'index.ts'), "import 'smoketape';\n");
   writeFileSync(
     join(consumer, 'tsconfig.json'),
@@ -71,7 +77,7 @@ try {
     { cwd: consumer, stdio: 'inherit' },
   );
 
-  console.log(`verified ${packed.filename}: package targets and TypeScript consumption`);
+  console.log(`verified ${packed.filename}: smoketape CLI, package targets, and TypeScript consumption`);
 } finally {
   rmSync(workspace, { recursive: true, force: true });
 }
