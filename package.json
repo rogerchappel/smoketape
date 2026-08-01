@@ -26,8 +26,9 @@
     "test": "npm run build && node --test dist/tests/*.test.js",
     "smoke": "npm run build && bash scripts/smoke.sh",
     "package:smoke": "node scripts/package-smoke.mjs",
+    "release:validate:test": "node --test tests/release-validation.test.mjs",
     "audit": "npm audit --audit-level=low",
-    "release:check": "npm run audit && npm run check && npm test && npm run build && npm run smoke && npm run package:smoke"
+    "release:check": "npm run audit && npm run check && npm test && npm run build && npm run smoke && npm run package:smoke && npm run release:validate:test"
   },
   "keywords": [
     "cli",
