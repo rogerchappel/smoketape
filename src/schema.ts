@@ -14,12 +14,25 @@ function stringList(value: unknown, field: string): string[] | undefined {
   throw new SmoketapeError(`${field} must be a string or string array`, 'INVALID_TAPE');
 }
 
+function regexList(value: unknown, field: string): void {
+  for (const pattern of stringList(value, field) ?? []) {
+    try {
+      new RegExp(pattern, 'm');
+    } catch (error) {
+      const reason = error instanceof Error
+        ? error.message.replace(/^Invalid regular expression: .*: /, '')
+        : String(error);
+      throw new SmoketapeError(`${field} contains invalid regular expression ${JSON.stringify(pattern)}: ${reason}`, 'INVALID_TAPE');
+    }
+  }
+}
+
 function assertOutput(value: unknown, field: string): void {
   if (value === undefined) return;
   if (!isRecord(value)) throw new SmoketapeError(`${field} must be an object`, 'INVALID_TAPE');
   stringList(value.contains, `${field}.contains`);
   stringList(value.notContains, `${field}.notContains`);
-  stringList(value.regex, `${field}.regex`);
+  regexList(value.regex, `${field}.regex`);
 }
 
 function assertEnv(value: unknown, field: string): void {
