@@ -22,5 +22,5 @@ A smoketape file is YAML with `version: 1` and a non-empty `steps` array.
 - `stdin`: text sent to the command.
 - `timeoutMs`: per-step timeout override.
 - `expect.exitCode`: expected numeric exit code, default `0`.
-- `expect.stdout` / `expect.stderr`: `contains`, `notContains`, and `regex` assertions.
+- `expect.stdout` / `expect.stderr`: `contains`, `notContains`, and `regex` assertions. Regex values use JavaScript regular-expression syntax with multiline matching. Smoketape validates every pattern while loading the tape; an invalid pattern exits nonzero with a field-specific `INVALID_TAPE` error before creating a sandbox or running any step.
 - `expect.files`: sandbox-relative file assertions.
