@@ -1,4 +1,4 @@
-import yaml from 'js-yaml';
+import { load as loadYaml } from 'js-yaml';
 import { readFile } from 'node:fs/promises';
 import { SmoketapeError } from './errors.js';
 import type { TapeConfig, TapeStep } from './types.js';
@@ -75,7 +75,9 @@ function assertStep(step: unknown, index: number): asserts step is TapeStep {
 
 export async function loadTape(tapePath: string): Promise<TapeConfig> {
   const raw = await readFile(tapePath, 'utf8');
-  const parsed = yaml.load(raw);
+  // js-yaml 5 throws for an empty document; retain Smoketape's established
+  // INVALID_TAPE validation path for empty and other non-object documents.
+  const parsed = raw.trim() === '' ? undefined : loadYaml(raw);
   if (!isRecord(parsed)) throw new SmoketapeError('Tape must be a YAML object', 'INVALID_TAPE');
   if (parsed.version !== undefined && parsed.version !== 1) throw new SmoketapeError('Only tape version 1 is supported', 'INVALID_TAPE');
   if (parsed.name !== undefined && typeof parsed.name !== 'string') throw new SmoketapeError('name must be a string', 'INVALID_TAPE');
