@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -58,7 +58,24 @@ try {
     { cwd: consumer, encoding: 'utf8' },
   ).trim();
   assert.equal(cliOutput, manifest.version, 'packed smoketape CLI reports the wrong version');
-  writeFileSync(join(consumer, 'index.ts'), "import 'smoketape';\n");
+
+  const runtimeImport = spawnSync(
+    process.execPath,
+    [
+      '--input-type=module',
+      '--eval',
+      "const api = await import('smoketape'); if (typeof api.runTape !== 'function' || typeof api.renderJson !== 'function') throw new Error('missing public API exports')",
+    ],
+    { cwd: consumer, encoding: 'utf8' },
+  );
+  assert.equal(runtimeImport.status, 0, `packed smoketape import failed: ${runtimeImport.stderr}`);
+  assert.equal(runtimeImport.stdout, '', 'packed smoketape import wrote to stdout');
+  assert.equal(runtimeImport.stderr, '', 'packed smoketape import wrote to stderr');
+
+  writeFileSync(
+    join(consumer, 'index.ts'),
+    "import { runTape, renderJson, type TapeReport } from 'smoketape';\nvoid runTape;\nvoid renderJson;\nconst report: TapeReport | undefined = undefined;\nvoid report;\n",
+  );
   writeFileSync(
     join(consumer, 'tsconfig.json'),
     JSON.stringify({
@@ -77,7 +94,7 @@ try {
     { cwd: consumer, stdio: 'inherit' },
   );
 
-  console.log(`verified ${packed.filename}: smoketape CLI, package targets, and TypeScript consumption`);
+  console.log(`verified ${packed.filename}: smoketape CLI, runtime import, package targets, and TypeScript consumption`);
 } finally {
   rmSync(workspace, { recursive: true, force: true });
 }
