@@ -30,6 +30,20 @@ smoketape run fixtures/sample.yml --json
 smoketape explain reports/smoke.json
 ```
 
+## Programmatic API
+
+Importing `smoketape` is side-effect free. The package root exports the tape runner,
+report formatters, report explainer, and their TypeScript types:
+
+```js
+import { runTape, renderJson } from 'smoketape';
+
+const report = await runTape('smoketape.yml');
+console.log(renderJson(report));
+```
+
+The command-line executable is available separately through the `smoketape` binary.
+
 ## Tape schema
 
 ```yaml
