@@ -83,7 +83,7 @@ command: ["node", "demo/cli.mjs", "--help"]
 - Runs in a temp sandbox by default.
 - Fixture paths must stay under the tape directory.
 - Step `cwd` and file assertions cannot escape the sandbox unless `--allow-host-cwd` is explicitly set.
-- Per-step timeouts default to 10 seconds.
+- Per-step timeouts default to 10 seconds. On POSIX platforms, timeout cleanup signals the command's process group (including descendants) and escalates from `SIGTERM` to `SIGKILL` after a 500 ms grace period; other platforms terminate the direct child.
 - Common proxy env vars are removed and `SMOKETAPE_NETWORK=disabled` is set unless `--allow-network` is passed.
 - Reports redact configured values and common token-looking strings.
 
