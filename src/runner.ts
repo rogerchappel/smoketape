@@ -87,16 +87,17 @@ function buildEnv(tape: TapeConfig, step: TapeStep, allowNetwork: boolean): Node
 
 function executeCommand(command: string | string[], cwd: string, env: NodeJS.ProcessEnv, stdin: string | undefined, timeoutMs: number): Promise<{ exitCode: number | null; stdout: string; stderr: string; timedOut: boolean }> {
   return new Promise((resolve) => {
+    const useProcessGroup = process.platform !== 'win32';
     const child = Array.isArray(command)
-      ? spawn(command[0] ?? '', command.slice(1), { cwd, env, shell: false })
-      : spawn(command, { cwd, env, shell: true });
+      ? spawn(command[0] ?? '', command.slice(1), { cwd, env, shell: false, detached: useProcessGroup })
+      : spawn(command, { cwd, env, shell: true, detached: useProcessGroup });
     let stdout = '';
     let stderr = '';
     let timedOut = false;
     const timer = setTimeout(() => {
       timedOut = true;
-      child.kill('SIGTERM');
-      setTimeout(() => child.kill('SIGKILL'), 500).unref();
+      killCommand(child.pid, useProcessGroup, 'SIGTERM');
+      setTimeout(() => killCommand(child.pid, useProcessGroup, 'SIGKILL'), 500).unref();
     }, timeoutMs);
     child.stdout?.on('data', (chunk) => { stdout += chunk.toString(); });
     child.stderr?.on('data', (chunk) => { stderr += chunk.toString(); });
@@ -108,4 +109,13 @@ function executeCommand(command: string | string[], cwd: string, env: NodeJS.Pro
     if (stdin !== undefined) child.stdin?.end(stdin);
     else child.stdin?.end();
   });
+}
+
+function killCommand(pid: number | undefined, processGroup: boolean, signal: NodeJS.Signals): void {
+  if (pid === undefined) return;
+  try {
+    process.kill(processGroup ? -pid : pid, signal);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ESRCH') throw error;
+  }
 }

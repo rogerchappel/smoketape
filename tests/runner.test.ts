@@ -31,6 +31,15 @@ test('marks timed out commands as failed', async () => {
   assert.equal(report.steps[0]?.timedOut, true);
 });
 
+test('cleans up descendants that retain inherited stdio after a timeout', { skip: process.platform === 'win32' }, async () => {
+  const started = performance.now();
+  const report = await runTape(fixture('timeout-descendant'));
+
+  assert.equal(report.ok, false);
+  assert.equal(report.steps[0]?.timedOut, true);
+  assert.ok(performance.now() - started < 2_000, 'timeout cleanup should finish within 2 seconds');
+});
+
 test('asserts created files inside sandbox', async () => {
   const report = await runTape(fixture('files'));
   assert.equal(report.ok, true);
