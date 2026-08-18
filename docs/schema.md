@@ -6,7 +6,7 @@ A smoketape file is YAML with `version: 1` and a non-empty `steps` array.
 
 - `name`: report title.
 - `description`: human context for the tape.
-- `timeoutMs`: default per-step timeout.
+- `timeoutMs`: default per-step timeout, expressed as a positive integer number of milliseconds. Zero, negative, fractional, and non-finite values are invalid.
 - `env`: environment values merged into every step.
 - `fixtures`: path or paths copied from beside the tape into the sandbox.
 - `redactions`: literal strings replaced with `[REDACTED]` before reports are emitted.
@@ -20,7 +20,7 @@ A smoketape file is YAML with `version: 1` and a non-empty `steps` array.
 - `cwd`: sandbox-relative working directory.
 - `env`: per-step environment values.
 - `stdin`: text sent to the command.
-- `timeoutMs`: per-step timeout override.
-- `expect.exitCode`: expected numeric exit code, default `0`.
+- `timeoutMs`: per-step timeout override with the same positive-integer constraint as the top-level timeout.
+- `expect.exitCode`: expected integer process exit status from `0` through `255`, default `0`.
 - `expect.stdout` / `expect.stderr`: `contains`, `notContains`, and `regex` assertions. Regex values use JavaScript regular-expression syntax with multiline matching. Smoketape validates every pattern while loading the tape; an invalid pattern exits nonzero with a field-specific `INVALID_TAPE` error before creating a sandbox or running any step.
 - `expect.files`: sandbox-relative file assertions.
