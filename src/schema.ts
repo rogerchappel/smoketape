@@ -45,6 +45,18 @@ function assertEnv(value: unknown, field: string): void {
   }
 }
 
+function assertTimeout(value: unknown, field: string): void {
+  if (value !== undefined && (!Number.isSafeInteger(value) || (value as number) < 1)) {
+    throw new SmoketapeError(`${field} must be a positive integer`, 'INVALID_TAPE');
+  }
+}
+
+function assertExitCode(value: unknown, field: string): void {
+  if (value !== undefined && (!Number.isInteger(value) || (value as number) < 0 || (value as number) > 255)) {
+    throw new SmoketapeError(`${field} must be an integer from 0 to 255`, 'INVALID_TAPE');
+  }
+}
+
 function assertStep(step: unknown, index: number): asserts step is TapeStep {
   const field = `steps[${index}]`;
   if (!isRecord(step)) throw new SmoketapeError(`${field} must be an object`, 'INVALID_TAPE');
@@ -54,11 +66,11 @@ function assertStep(step: unknown, index: number): asserts step is TapeStep {
   if (step.name !== undefined && typeof step.name !== 'string') throw new SmoketapeError(`${field}.name must be a string`, 'INVALID_TAPE');
   if (step.cwd !== undefined && typeof step.cwd !== 'string') throw new SmoketapeError(`${field}.cwd must be a string`, 'INVALID_TAPE');
   if (step.stdin !== undefined && typeof step.stdin !== 'string') throw new SmoketapeError(`${field}.stdin must be a string`, 'INVALID_TAPE');
-  if (step.timeoutMs !== undefined && (typeof step.timeoutMs !== 'number' || step.timeoutMs < 1)) throw new SmoketapeError(`${field}.timeoutMs must be a positive number`, 'INVALID_TAPE');
+  assertTimeout(step.timeoutMs, `${field}.timeoutMs`);
   assertEnv(step.env, `${field}.env`);
   if (step.expect !== undefined) {
     if (!isRecord(step.expect)) throw new SmoketapeError(`${field}.expect must be an object`, 'INVALID_TAPE');
-    if (step.expect.exitCode !== undefined && typeof step.expect.exitCode !== 'number') throw new SmoketapeError(`${field}.expect.exitCode must be a number`, 'INVALID_TAPE');
+    assertExitCode(step.expect.exitCode, `${field}.expect.exitCode`);
     assertOutput(step.expect.stdout, `${field}.expect.stdout`);
     assertOutput(step.expect.stderr, `${field}.expect.stderr`);
     if (step.expect.files !== undefined) {
@@ -81,7 +93,7 @@ export async function loadTape(tapePath: string): Promise<TapeConfig> {
   if (!isRecord(parsed)) throw new SmoketapeError('Tape must be a YAML object', 'INVALID_TAPE');
   if (parsed.version !== undefined && parsed.version !== 1) throw new SmoketapeError('Only tape version 1 is supported', 'INVALID_TAPE');
   if (parsed.name !== undefined && typeof parsed.name !== 'string') throw new SmoketapeError('name must be a string', 'INVALID_TAPE');
-  if (parsed.timeoutMs !== undefined && (typeof parsed.timeoutMs !== 'number' || parsed.timeoutMs < 1)) throw new SmoketapeError('timeoutMs must be a positive number', 'INVALID_TAPE');
+  assertTimeout(parsed.timeoutMs, 'timeoutMs');
   if (parsed.redactions !== undefined && !(Array.isArray(parsed.redactions) && parsed.redactions.every((item) => typeof item === 'string'))) throw new SmoketapeError('redactions must be a string array', 'INVALID_TAPE');
   if (parsed.fixtures !== undefined && !(typeof parsed.fixtures === 'string' || (Array.isArray(parsed.fixtures) && parsed.fixtures.every((item) => typeof item === 'string')))) throw new SmoketapeError('fixtures must be a string or string array', 'INVALID_TAPE');
   assertEnv(parsed.env, 'env');
