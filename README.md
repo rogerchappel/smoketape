@@ -30,6 +30,9 @@ smoketape run fixtures/sample.yml --json
 smoketape explain reports/smoke.json
 ```
 
+`smoketape run --timeout-ms <ms>` sets the default per-step timeout. The value
+must be a positive integer with no decimal point, sign, or trailing characters.
+
 ## Programmatic API
 
 Importing `smoketape` is side-effect free. The package root exports the tape runner,
