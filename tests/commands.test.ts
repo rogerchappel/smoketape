@@ -33,3 +33,30 @@ test('CLI exits non-zero for failing tapes', async () => {
     /Command failed/
   );
 });
+
+test('CLI rejects malformed timeout values without running the tape', async () => {
+  for (const value of ['1000junk', '1.5', '0', '-1', '', 'Infinity', 'NaN']) {
+    await assert.rejects(
+      () => execFileAsync('node', [
+        'dist/src/index.js', 'run', 'tests/fixtures/basic/tape.yml', '--timeout-ms', value, '--json'
+      ], { cwd: process.cwd() }),
+      (error: unknown) => {
+        assert.ok(error instanceof Error);
+        const failure = error as Error & { code?: number; stderr?: string; stdout?: string };
+        assert.equal(failure.code, 1, value);
+        assert.match(failure.stderr ?? '', /--timeout-ms must be a positive integer/, value);
+        assert.equal(failure.stdout, '', value);
+        return true;
+      }
+    );
+  }
+});
+
+test('CLI accepts a positive integer timeout', async () => {
+  const { stdout, stderr } = await execFileAsync('node', [
+    'dist/src/index.js', 'run', 'tests/fixtures/basic/tape.yml', '--timeout-ms', '1000', '--json'
+  ], { cwd: process.cwd() });
+
+  assert.equal(stderr, '');
+  assert.equal(JSON.parse(stdout).ok, true);
+});
