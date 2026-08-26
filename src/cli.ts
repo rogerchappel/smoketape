@@ -57,7 +57,8 @@ export async function main(argv = process.argv): Promise<void> {
 }
 
 function parsePositiveInt(value: string): number {
-  const parsed = Number.parseInt(value, 10);
-  if (!Number.isFinite(parsed) || parsed < 1) throw new Error('Expected a positive integer');
+  if (!/^[1-9]\d*$/.test(value)) throw new Error('--timeout-ms must be a positive integer');
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) throw new Error('--timeout-ms must be a positive integer');
   return parsed;
 }
