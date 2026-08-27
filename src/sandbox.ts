@@ -9,10 +9,21 @@ export async function createSandbox(tapePath: string, tape: TapeConfig, requeste
   await mkdir(sandbox, { recursive: true });
   const tapeDir = path.dirname(path.resolve(tapePath));
   const fixtures = tape.fixtures === undefined ? [] : Array.isArray(tape.fixtures) ? tape.fixtures : [tape.fixtures];
-  for (const fixture of fixtures) {
+  const staged = fixtures.map((fixture) => {
     const source = path.resolve(tapeDir, fixture);
     const destination = path.join(sandbox, path.basename(fixture));
     assertInside(tapeDir, source, `Fixture path escapes tape directory: ${fixture}`);
+    return { fixture, source, destination };
+  });
+  const destinations = new Map<string, string>();
+  for (const entry of staged) {
+    const prior = destinations.get(entry.destination);
+    if (prior !== undefined) {
+      throw new SmoketapeError(`Fixture paths have the same sandbox basename: ${prior} and ${entry.fixture}`, 'INVALID_TAPE');
+    }
+    destinations.set(entry.destination, entry.fixture);
+  }
+  for (const { source, destination } of staged) {
     await cp(source, destination, { recursive: true, force: true, errorOnExist: false });
   }
   return sandbox;
