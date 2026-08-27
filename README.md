@@ -85,6 +85,7 @@ command: ["node", "demo/cli.mjs", "--help"]
 
 - Runs in a temp sandbox by default.
 - Fixture paths must stay under the tape directory.
+- Fixtures are staged at the sandbox root using their basenames. Multiple fixture paths with the same basename are rejected before staging so one cannot silently overwrite another.
 - Step `cwd` and file assertions cannot escape the sandbox unless `--allow-host-cwd` is explicitly set.
 - Per-step timeouts default to 10 seconds. On POSIX platforms, timeout cleanup signals the command's process group (including descendants) and escalates from `SIGTERM` to `SIGKILL` after a 500 ms grace period; other platforms terminate the direct child.
 - Common proxy env vars are removed and `SMOKETAPE_NETWORK=disabled` is set unless `--allow-network` is passed.
