@@ -14,7 +14,7 @@ test('default redaction stays fast on large benign output and preserves supporte
   const result = redactText(`${benign}\nAPI_TOKEN=visible\nghp_${'a'.repeat(24)}\nsk-${'b'.repeat(24)}\nPASSWORD=hunter2`);
   assert.ok(performance.now() - started < 1_000, '40,000-character redaction should complete within one second');
   assert.equal(result.redacted, true);
-  assert.match(result.text, new RegExp(`^${benign}`));
+  assert.equal(result.text.startsWith(benign), true);
   assert.doesNotMatch(result.text, /visible|hunter2|ghp_|sk-/);
 });
 
@@ -39,8 +39,8 @@ test('retains bounded stdout and stderr and reports truncation without leaking b
   const step = report.steps[0]!;
   assert.equal(step.stdoutTruncated, true);
   assert.equal(step.stderrTruncated, true);
-  assert.ok(Buffer.byteLength(step.stdout) <= 65_536);
-  assert.ok(Buffer.byteLength(step.stderr) <= 65_536);
+  assert.ok(Buffer.byteLength(step.stdout) <= 65_536, `stdout retained ${Buffer.byteLength(step.stdout)} bytes`);
+  assert.ok(Buffer.byteLength(step.stderr) <= 65_536, `stderr retained ${Buffer.byteLength(step.stderr)} bytes`);
   assert.doesNotMatch(renderJson(report), /boundary-secret|ghp_/);
   const markdown = renderMarkdown(report);
   assert.match(markdown, /stdout \(truncated at 65536 bytes\)/);

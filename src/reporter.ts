@@ -23,8 +23,8 @@ export function renderMarkdown(report: TapeReport): string {
     lines.push(`- Exit code: ${step.exitCode}${step.timedOut ? ' (timed out)' : ''}`);
     lines.push(`- Duration: ${step.durationMs}ms`);
     lines.push('');
-    if (step.stdout) lines.push('<details><summary>stdout</summary>\n\n```text\n' + step.stdout.trimEnd() + '\n```\n</details>');
-    if (step.stderr) lines.push('<details><summary>stderr</summary>\n\n```text\n' + step.stderr.trimEnd() + '\n```\n</details>');
+    if (step.stdout) lines.push(`<details><summary>stdout${step.stdoutTruncated ? ` (truncated at ${65_536} bytes)` : ''}</summary>\n\n\`\`\`text\n` + step.stdout.trimEnd() + '\n```\n</details>');
+    if (step.stderr) lines.push(`<details><summary>stderr${step.stderrTruncated ? ` (truncated at ${65_536} bytes)` : ''}</summary>\n\n\`\`\`text\n` + step.stderr.trimEnd() + '\n```\n</details>');
     lines.push('');
     lines.push('| Target | Assertion | Result | Message |');
     lines.push('| --- | --- | --- | --- |');
