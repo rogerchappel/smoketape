@@ -55,6 +55,8 @@ export type StepResult = {
   durationMs: number;
   stdout: string;
   stderr: string;
+  stdoutTruncated: boolean;
+  stderrTruncated: boolean;
   assertions: AssertionResult[];
   ok: boolean;
 };

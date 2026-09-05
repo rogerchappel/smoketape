@@ -1,10 +1,5 @@
-const DEFAULT_SECRET_PATTERNS = [
-  /[A-Za-z0-9_+.-]*TOKEN[A-Za-z0-9_+.-]*=([^\s\"\']+)/gi,
-  /[A-Za-z0-9_+.-]*SECRET[A-Za-z0-9_+.-]*=([^\s\"\']+)/gi,
-  /[A-Za-z0-9_+.-]*PASSWORD[A-Za-z0-9_+.-]*=([^\s\"\']+)/gi,
-  /ghp_[A-Za-z0-9_]{20,}/g,
-  /sk-[A-Za-z0-9]{20,}/g
-];
+const ASSIGNMENT_PATTERN = /[^\s\"']+/g;
+const TOKEN_PATTERNS = [/ghp_[A-Za-z0-9_]{20,}/g, /sk-[A-Za-z0-9]{20,}/g];
 
 export function redactText(input: string, redactions: string[] = []): { text: string; redacted: boolean } {
   let text = input;
@@ -15,10 +10,18 @@ export function redactText(input: string, redactions: string[] = []): { text: st
       redacted = true;
     }
   }
-  for (const pattern of DEFAULT_SECRET_PATTERNS) {
-    text = text.replace(pattern, (match, group) => {
+  text = text.replace(ASSIGNMENT_PATTERN, (match) => {
+    const separator = match.indexOf('=');
+    if (separator < 0) return match;
+    const key = match.slice(0, separator);
+    if (!/(?:TOKEN|SECRET|PASSWORD)/i.test(key)) return match;
+    redacted = true;
+    return `${key}=[REDACTED]`;
+  });
+  for (const pattern of TOKEN_PATTERNS) {
+    text = text.replace(pattern, () => {
       redacted = true;
-      return group ? match.replace(group, '[REDACTED]') : '[REDACTED]';
+      return '[REDACTED]';
     });
   }
   return { text, redacted };
