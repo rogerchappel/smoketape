@@ -14,6 +14,8 @@ format and uses semantic versioning when versioned releases are published.
 
 ### Changed
 
+- Tape-level `allowHostCwd` and `allowNetwork` fields now reject non-boolean
+  YAML values before sandbox creation or command execution.
 - Updated `js-yaml` and `tsx` lockfile resolutions to pick up patched
   `js-yaml` and `esbuild` releases.
 

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
-import { mkdtemp, readFile } from 'node:fs/promises';
+import { access, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
@@ -90,4 +90,27 @@ test('real CLI smoke writes JSON and markdown reports', async () => {
   await execFileAsync('node', ['dist/src/index.js', 'run', 'fixtures/sample.yml', '--report', mdPath], { cwd: root });
   assert.equal(JSON.parse(await readFile(jsonPath, 'utf8')).ok, true);
   assert.match(await readFile(mdPath, 'utf8'), /Smoketape Report/);
+});
+
+test('CLI rejects non-boolean safety flags before executing commands', async () => {
+  await execFileAsync('npm', ['run', 'build'], { cwd: root });
+  const tmp = await mkdtemp(path.join(os.tmpdir(), 'smoketape-boolean-cli-'));
+  const marker = path.join(tmp, 'command-ran');
+  const tapePath = path.join(tmp, 'tape.yml');
+  await writeFile(tapePath, [
+    'version: 1',
+    'allowNetwork: "false"',
+    'steps:',
+    `  - command: [node, -e, "require('node:fs').writeFileSync('${marker}', 'ran')"]`
+  ].join('\n'));
+
+  await assert.rejects(
+    execFileAsync('node', [path.join(root, 'dist/src/index.js'), 'run', tapePath, '--json'], { cwd: tmp }),
+    (error: Error & { code?: number; stderr?: string }) => {
+      assert.notEqual(error.code, 0);
+      assert.match(error.stderr ?? '', /allowNetwork must be a boolean/);
+      return true;
+    }
+  );
+  await assert.rejects(access(marker));
 });

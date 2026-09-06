@@ -116,3 +116,36 @@ for (const document of ['', 'null\n', '- command: echo\n']) {
     );
   });
 }
+
+for (const field of ['allowNetwork', 'allowHostCwd'] as const) {
+  for (const value of ['"false"', '1', 'null']) {
+    test(`rejects non-boolean ${field} value ${value}`, async () => {
+      const tapePath = await writeTape([
+        'version: 1',
+        `${field}: ${value}`,
+        'steps:',
+        '  - command: echo should-not-run'
+      ].join('\n'));
+
+      await assert.rejects(
+        () => loadTape(tapePath),
+        (error) => error instanceof SmoketapeError
+          && error.code === 'INVALID_TAPE'
+          && error.message === `${field} must be a boolean`
+      );
+    });
+  }
+
+  for (const value of [true, false]) {
+    test(`accepts boolean ${field} value ${value}`, async () => {
+      const tape = await loadTape(await writeTape([
+        'version: 1',
+        `${field}: ${value}`,
+        'steps:',
+        '  - command: echo ok'
+      ].join('\n')));
+
+      assert.equal(tape[field], value);
+    });
+  }
+}

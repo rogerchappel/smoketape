@@ -89,6 +89,7 @@ command: ["node", "demo/cli.mjs", "--help"]
 - Step `cwd` and file assertions cannot escape the sandbox unless `--allow-host-cwd` is explicitly set.
 - Per-step timeouts default to 10 seconds. On POSIX platforms, timeout cleanup signals the command's process group (including descendants) and escalates from `SIGTERM` to `SIGKILL` after a 500 ms grace period; other platforms terminate the direct child.
 - Common proxy env vars are removed and `SMOKETAPE_NETWORK=disabled` is set unless `--allow-network` is passed.
+- Tape-level `allowHostCwd` and `allowNetwork` values must be literal YAML booleans (`true` or `false`); quoted strings, numbers, and null are rejected before sandbox creation or command execution.
 - Reports redact configured values, `TOKEN`/`SECRET`/`PASSWORD` assignments, and common `ghp_`/`sk-` token strings.
 - Each step retains at most 65,536 bytes from stdout and 65,536 bytes from stderr. JSON exposes `stdoutTruncated` and `stderrTruncated`; Markdown labels truncated streams. Assertions run against the retained, redacted output.
 
