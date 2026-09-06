@@ -57,6 +57,12 @@ function assertExitCode(value: unknown, field: string): void {
   }
 }
 
+function assertBoolean(value: unknown, field: string): void {
+  if (value !== undefined && typeof value !== 'boolean') {
+    throw new SmoketapeError(`${field} must be a boolean`, 'INVALID_TAPE');
+  }
+}
+
 function assertStep(step: unknown, index: number): asserts step is TapeStep {
   const field = `steps[${index}]`;
   if (!isRecord(step)) throw new SmoketapeError(`${field} must be an object`, 'INVALID_TAPE');
@@ -93,6 +99,8 @@ export async function loadTape(tapePath: string): Promise<TapeConfig> {
   if (!isRecord(parsed)) throw new SmoketapeError('Tape must be a YAML object', 'INVALID_TAPE');
   if (parsed.version !== undefined && parsed.version !== 1) throw new SmoketapeError('Only tape version 1 is supported', 'INVALID_TAPE');
   if (parsed.name !== undefined && typeof parsed.name !== 'string') throw new SmoketapeError('name must be a string', 'INVALID_TAPE');
+  assertBoolean(parsed.allowNetwork, 'allowNetwork');
+  assertBoolean(parsed.allowHostCwd, 'allowHostCwd');
   assertTimeout(parsed.timeoutMs, 'timeoutMs');
   if (parsed.redactions !== undefined && !(Array.isArray(parsed.redactions) && parsed.redactions.every((item) => typeof item === 'string'))) throw new SmoketapeError('redactions must be a string array', 'INVALID_TAPE');
   if (parsed.fixtures !== undefined && !(typeof parsed.fixtures === 'string' || (Array.isArray(parsed.fixtures) && parsed.fixtures.every((item) => typeof item === 'string')))) throw new SmoketapeError('fixtures must be a string or string array', 'INVALID_TAPE');
