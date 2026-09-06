@@ -10,8 +10,12 @@ A smoketape file is YAML with `version: 1` and a non-empty `steps` array.
 - `env`: environment values merged into every step.
 - `fixtures`: path or paths copied from beside the tape into the sandbox.
 - `redactions`: literal strings replaced with `[REDACTED]` before reports are emitted.
-- `allowHostCwd`: opt-in escape hatch for cwd outside the sandbox.
-- `allowNetwork`: explicit marker that network use is intended.
+- `allowHostCwd`: YAML boolean opt-in escape hatch for cwd outside the sandbox.
+- `allowNetwork`: YAML boolean marker that network use is intended.
+
+Both safety flags require literal YAML booleans (`true` or `false`). Quoted
+strings, numbers, and null values are rejected as `INVALID_TAPE` before the
+sandbox is created or a command runs.
 
 ## Step fields
 
