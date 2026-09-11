@@ -65,7 +65,7 @@ for (const [scope, indentation] of [
         () => loadTape(tapePath),
         (error) => error instanceof SmoketapeError
           && error.code === 'INVALID_TAPE'
-          && error.message === `${scope === 'tape' ? '' : 'steps[0].'}timeoutMs must be a positive integer`
+          && error.message === `${scope === 'tape' ? '' : 'steps[0].'}timeoutMs must be a positive integer no greater than 2147483647`
       );
     });
   }
