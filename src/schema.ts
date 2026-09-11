@@ -2,6 +2,7 @@ import { load as loadYaml } from 'js-yaml';
 import { readFile } from 'node:fs/promises';
 import { SmoketapeError } from './errors.js';
 import type { TapeConfig, TapeStep } from './types.js';
+import { MAX_TIMEOUT_MS, TIMEOUT_ERROR_SUFFIX } from './timeout.js';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -46,8 +47,8 @@ function assertEnv(value: unknown, field: string): void {
 }
 
 function assertTimeout(value: unknown, field: string): void {
-  if (value !== undefined && (!Number.isSafeInteger(value) || (value as number) < 1)) {
-    throw new SmoketapeError(`${field} must be a positive integer`, 'INVALID_TAPE');
+  if (value !== undefined && (!Number.isSafeInteger(value) || (value as number) < 1 || (value as number) > MAX_TIMEOUT_MS)) {
+    throw new SmoketapeError(`${field} ${TIMEOUT_ERROR_SUFFIX}`, 'INVALID_TAPE');
   }
 }
 
