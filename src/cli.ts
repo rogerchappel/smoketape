@@ -5,6 +5,7 @@ import { initProject } from './init.js';
 import { explainReport } from './explain.js';
 import { renderJson, renderMarkdown } from './reporter.js';
 import { runTape } from './runner.js';
+import { MAX_TIMEOUT_MS } from './timeout.js';
 
 export async function main(argv = process.argv): Promise<void> {
   const program = new Command();
@@ -57,8 +58,8 @@ export async function main(argv = process.argv): Promise<void> {
 }
 
 function parsePositiveInt(value: string): number {
-  if (!/^[1-9]\d*$/.test(value)) throw new Error('--timeout-ms must be a positive integer');
+  if (!/^[1-9]\d*$/.test(value)) throw new Error(`--timeout-ms must be a positive integer no greater than ${MAX_TIMEOUT_MS}`);
   const parsed = Number(value);
-  if (!Number.isFinite(parsed)) throw new Error('--timeout-ms must be a positive integer');
+  if (!Number.isSafeInteger(parsed) || parsed > MAX_TIMEOUT_MS) throw new Error(`--timeout-ms must be a positive integer no greater than ${MAX_TIMEOUT_MS}`);
   return parsed;
 }
