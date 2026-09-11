@@ -27,11 +27,13 @@ node dist/src/index.js run fixtures/sample.yml --report reports/sample.md
 smoketape init
 smoketape run smoketape.yml --report reports/smoke.md
 smoketape run fixtures/sample.yml --json
+smoketape run fixtures/sample.yml --timeout-ms 10000
 smoketape explain reports/smoke.json
 ```
 
 `smoketape run --timeout-ms <ms>` sets the default per-step timeout. The value
-must be a positive integer with no decimal point, sign, or trailing characters.
+must be a positive integer no greater than `2147483647`, the Node.js timer
+maximum.
 
 ## Programmatic API
 
@@ -87,7 +89,7 @@ command: ["node", "demo/cli.mjs", "--help"]
 - Fixture paths must stay under the tape directory.
 - Fixtures are staged at the sandbox root using their basenames. Multiple fixture paths with the same basename are rejected before staging so one cannot silently overwrite another.
 - Step `cwd` and file assertions cannot escape the sandbox unless `--allow-host-cwd` is explicitly set.
-- Per-step timeouts default to 10 seconds. On POSIX platforms, timeout cleanup signals the command's process group (including descendants) and escalates from `SIGTERM` to `SIGKILL` after a 500 ms grace period; other platforms terminate the direct child.
+- Per-step timeouts default to 10 seconds. The `--timeout-ms` value and tape/step `timeoutMs` fields must be positive integers no greater than `2147483647`, the Node.js timer maximum. On POSIX platforms, timeout cleanup signals the command's process group (including descendants) and escalates from `SIGTERM` to `SIGKILL` after a 500 ms grace period; other platforms terminate the direct child.
 - Common proxy env vars are removed and `SMOKETAPE_NETWORK=disabled` is set unless `--allow-network` is passed.
 - Tape-level `allowHostCwd` and `allowNetwork` values must be literal YAML booleans (`true` or `false`); quoted strings, numbers, and null are rejected before sandbox creation or command execution.
 - Reports redact configured values, `TOKEN`/`SECRET`/`PASSWORD` assignments, and common `ghp_`/`sk-` token strings.
